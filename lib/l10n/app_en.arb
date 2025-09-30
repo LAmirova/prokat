@@ -1,0 +1,29 @@
+{
+
+  
+  "@@locale": "en",
+  "appTitle": "Prokat App",
+  "loginTitle": "Sign in",
+  "forgotPassword": "Forgot password?",
+  "noAccountRegister": "No account? Register",
+  "invalidPhone": "Enter a valid phone number",
+  "enterPassword": "Enter password",
+  "sendCode": "Send code",
+  "codeSent": "Code sent",
+  "continueBtn": "Continue",
+  "registerTitle": "Registration",
+  "verifyTitle": "Code verification",
+  "weSentCodeTo": "We sent a code to:",
+  "confirm": "Confirm",
+  "enter6Digits": "Enter 6-digit code",
+  "newPasswordTitle": "New password",
+  "password": "Password",
+  "confirmPassword": "Confirm password",
+  "passwordsDontMatch": "Passwords do not match",
+  "passwordWeak": "At least 8 chars, letters and digits",
+  "passwordSaved": "Password saved",
+  "loginSuccess": "Signed in",
+  "loginError": "Login error: {error}",
+  "apiError": "Error: {error}",
+  "phoneHelp": "Enter phone number, a code will be sent"
+}
