@@ -1,8 +1,11 @@
+// lib/app/router.dart
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-// AUTH PAGES
-import 'package:prokat_app/features/auth/pages/home_page.dart';
+// LAYOUT
+import 'package:prokat_app/app/main_layout.dart';
+
+// AUTH
 import 'package:prokat_app/features/auth/presentation/pages/login_page.dart';
 import 'package:prokat_app/features/auth/presentation/pages/register_page.dart';
 import 'package:prokat_app/features/auth/presentation/pages/verify_page.dart';
@@ -16,49 +19,51 @@ import 'package:prokat_app/features/listings/presentation/pages/listing_create_p
 // ACCOUNT
 import 'package:prokat_app/features/account/presentation/pages/account_page.dart';
 
-/// Отдельные роуты каталога
-final listingsRoutes = <GoRoute>[
-  GoRoute(
-    path: '/listings',
-    builder: (context, state) => const ListingsHomePage(),
-    routes: [
-      GoRoute(
-        path: 'create', // => /listings/create
-        builder: (context, state) => const ListingCreatePage(),
-      ),
-    ],
-  ),
-];
+// OTHER TABS
+import 'package:prokat_app/features/favorites/presentation/pages/favorites_page.dart';
+import 'package:prokat_app/features/messages/presentation/pages/messages_page.dart';
 
-/// Основной роутер приложения
 final router = GoRouter(
-  initialLocation: '/home',
-  routes: <RouteBase>[
-    // AUTH
-    GoRoute(path: '/login', builder: (context, state) => const LoginPage()),
-    GoRoute(
-        path: '/register', builder: (context, state) => const RegisterPage()),
-    GoRoute(path: '/verify', builder: (context, state) => const VerifyPage()),
-    GoRoute(
-        path: '/set-password',
-        builder: (context, state) => const SetPasswordPage()),
+  initialLocation: '/listings',
+  routes: [
+    // Auth (вне ShellRoute)
+    GoRoute(path: '/login', builder: (_, __) => const LoginPage()),
+    GoRoute(path: '/register', builder: (_, __) => const RegisterPage()),
+    GoRoute(path: '/verify', builder: (_, __) => const VerifyPage()),
+    GoRoute(path: '/set-password', builder: (_, __) => const SetPasswordPage()),
     GoRoute(
         path: '/forgot-password',
-        builder: (context, state) => const ForgotPasswordPage()),
+        builder: (_, __) => const ForgotPasswordPage()),
 
-    // HOME
-    GoRoute(path: '/home', builder: (context, state) => const HomePage()),
-
-    // ACCOUNT
-    GoRoute(
-      path: '/account',
-      builder: (context, state) => const AccountPage(),
+    // Общий лэйаут снизу + FAB
+    ShellRoute(
+      builder: (context, state, child) => MainLayout(child: child),
+      routes: [
+        GoRoute(
+          path: '/listings',
+          builder: (_, __) => const ListingsHomePage(),
+          routes: [
+            GoRoute(
+              path: 'create', // /listings/create
+              builder: (_, __) => const ListingCreatePage(),
+            ),
+          ],
+        ),
+        GoRoute(
+          path: '/favorites',
+          builder: (_, __) => const FavoritesPage(),
+        ),
+        GoRoute(
+          path: '/messages',
+          builder: (_, __) => const MessagesPage(),
+        ),
+        GoRoute(
+          path: '/account',
+          builder: (_, __) => const AccountPage(),
+        ),
+      ],
     ),
-
-    // LISTINGS
-    ...listingsRoutes,
   ],
 );
 
-/// Провайдер для GoRouter (используется в MaterialApp.router)
 final routerProvider = Provider<GoRouter>((ref) => router);

@@ -1,7 +1,7 @@
+// lib/features/listings/presentation/pages/listings_home_page.dart
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:prokat_app/app/providers.dart';
 import 'package:prokat_app/features/listings/widgets/listing_card.dart';
 
@@ -34,6 +34,7 @@ class _ListingsHomePageState extends ConsumerState<ListingsHomePage> {
   @override
   void dispose() {
     _debounce?.cancel();
+    _searchCtrl.removeListener(_onChanged);
     _searchCtrl.dispose();
     super.dispose();
   }
@@ -41,70 +42,65 @@ class _ListingsHomePageState extends ConsumerState<ListingsHomePage> {
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(listingsStateProvider);
-    final notifier = ref.read(listingsStateProvider.notifier);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(state.showingMine ? 'Мои объявления' : 'Каталог'),
+        titleSpacing: 0,
+        title: TextField(
+          controller: _searchCtrl,
+          textInputAction: TextInputAction.search,
+          decoration: const InputDecoration(
+            hintText: 'Поиск по названию…',
+            border: InputBorder.none,
+            prefixIcon: Icon(Icons.search),
+            isDense: true,
+          ),
+        ),
         actions: [
           IconButton(
-            onPressed: () async {
-              await context.push('/listings/create');
-              if (mounted) {
-                state.showingMine ? notifier.loadMine() : notifier.load();
-              }
+            tooltip: 'Фильтры',
+            icon: const Icon(Icons.tune),
+            onPressed: () {
+              // TODO: открыть экран/боковой лист с фильтрами
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Фильтры скоро будут 😉')),
+              );
             },
-            icon: const Icon(Icons.add),
-            tooltip: 'Создать объявление',
-          ),
-          PopupMenuButton<String>(
-            onSelected: (v) {
-              if (v == 'mine') {
-                notifier.loadMine();
-              } else {
-                notifier.load();
-              }
-            },
-            itemBuilder: (context) => const [
-              PopupMenuItem(value: 'all', child: Text('Все объявления')),
-              PopupMenuItem(value: 'mine', child: Text('Мои объявления')),
-            ],
           ),
         ],
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
-            child: TextField(
-              controller: _searchCtrl,
-              decoration: const InputDecoration(
-                hintText: 'Поиск по названию…',
-                prefixIcon: Icon(Icons.search),
+      body: Builder(
+        builder: (context) {
+          if (state.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (state.error != null) {
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child:
+                    Text('Ошибка: ${state.error}', textAlign: TextAlign.center),
               ),
+            );
+          }
+          if (state.items.isEmpty) {
+            return const Center(child: Text('Пока пусто'));
+          }
+
+          // Pull-to-refresh перезапускает поиск по текущей строке
+          return RefreshIndicator(
+            onRefresh: () async {
+              await ref
+                  .read(listingsStateProvider.notifier)
+                  .search(_searchCtrl.text.trim());
+            },
+            child: ListView.builder(
+              physics: const AlwaysScrollableScrollPhysics(),
+              itemCount: state.items.length,
+              itemBuilder: (context, i) => ListingCard(item: state.items[i]),
             ),
-          ),
-          Expanded(
-            child: Builder(
-              builder: (context) {
-                if (state.isLoading) return const Center(child: CircularProgressIndicator());
-                if (state.error != null) {
-                  return Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Text('Ошибка: ${state.error}', textAlign: TextAlign.center),
-                    ),
-                  );
-                }
-                if (state.items.isEmpty) return const Center(child: Text('Пока пусто'));
-                return ListView.builder(
-                  itemCount: state.items.length,
-                  itemBuilder: (context, i) => ListingCard(item: state.items[i]),
-                );
-              },
-            ),
-          ),
-        ],
+          );
+        },
       ),
     );
   }

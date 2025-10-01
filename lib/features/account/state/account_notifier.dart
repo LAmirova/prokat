@@ -5,14 +5,26 @@ class AccountState {
   final bool loading;
   final UserMe? user;
   final String? error;
+  final bool uploading;
 
-  const AccountState({this.loading = false, this.user, this.error});
+  const AccountState({
+    this.loading = true,
+    this.user,
+    this.error,
+    this.uploading = false,
+  });
 
-  AccountState copyWith({bool? loading, UserMe? user, String? error}) =>
+  AccountState copyWith({
+    bool? loading,
+    UserMe? user,
+    String? error,
+    bool? uploading,
+  }) =>
       AccountState(
         loading: loading ?? this.loading,
         user: user ?? this.user,
         error: error,
+        uploading: uploading ?? this.uploading,
       );
 }
 
@@ -31,13 +43,13 @@ class AccountNotifier extends StateNotifier<AccountState> {
   }
 
   Future<bool> uploadPassport(List<String> paths) async {
-    state = state.copyWith(loading: true, error: null);
+    state = state.copyWith(uploading: true, error: null);
     try {
-      await repo.uploadPassport(paths);
-      await load(); // обновим инфу
+      await repo.uploadPassportPhotos(paths);
+      await load(); // обновим данные
       return true;
     } catch (e) {
-      state = state.copyWith(loading: false, error: e.toString());
+      state = state.copyWith(uploading: false, error: e.toString());
       return false;
     }
   }

@@ -30,9 +30,8 @@ final listingsStateProvider =
 // --- ACCOUNT
 final accountApiProvider = Provider<AccountApi>((ref) => AccountApi());
 final accountRepositoryProvider = Provider<AccountRepository>(
-  (ref) => AccountRepository(ref.watch(accountApiProvider)),
-);
+    (ref) => AccountRepository(ref.watch(accountApiProvider)));
 final accountNotifierProvider =
-    StateNotifierProvider<AccountNotifier, AccountState>(
-  (ref) => AccountNotifier(ref.watch(accountRepositoryProvider)),
-);
+    StateNotifierProvider<AccountNotifier, AccountState>((ref) {
+  return AccountNotifier(ref.watch(accountRepositoryProvider));
+});
