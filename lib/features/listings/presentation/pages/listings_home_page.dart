@@ -14,12 +14,13 @@ class ListingsHomePage extends ConsumerStatefulWidget {
 }
 
 class _ListingsHomePageState extends ConsumerState<ListingsHomePage> {
-  final _searchCtrl = TextEditingController();
+  final TextEditingController _searchCtrl = TextEditingController();
   Timer? _debounce;
 
   @override
   void initState() {
     super.initState();
+    // восстановим строку поиска из стейта
     _searchCtrl.text = ref.read(listingsStateProvider).query;
     _searchCtrl.addListener(_onChanged);
   }
@@ -42,6 +43,7 @@ class _ListingsHomePageState extends ConsumerState<ListingsHomePage> {
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(listingsStateProvider);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       appBar: AppBar(
@@ -49,11 +51,17 @@ class _ListingsHomePageState extends ConsumerState<ListingsHomePage> {
         title: TextField(
           controller: _searchCtrl,
           textInputAction: TextInputAction.search,
-          decoration: const InputDecoration(
+          decoration: InputDecoration(
             hintText: 'Поиск по названию…',
             border: InputBorder.none,
-            prefixIcon: Icon(Icons.search),
+            prefixIcon: const Icon(Icons.search),
             isDense: true,
+            filled: true,
+            fillColor: isDark ? Colors.white10 : Colors.white,
+            contentPadding: const EdgeInsets.symmetric(vertical: 10),
+          ),
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
         actions: [
@@ -61,7 +69,6 @@ class _ListingsHomePageState extends ConsumerState<ListingsHomePage> {
             tooltip: 'Фильтры',
             icon: const Icon(Icons.tune),
             onPressed: () {
-              // TODO: открыть экран/боковой лист с фильтрами
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Фильтры скоро будут 😉')),
               );
