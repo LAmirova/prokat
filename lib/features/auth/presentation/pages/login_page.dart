@@ -7,6 +7,7 @@ import 'package:prokat_app/core/utils/formatters.dart';
 import 'package:prokat_app/features/auth/widgets/phone_field.dart';
 import 'package:prokat_app/features/auth/widgets/password_field.dart';
 import 'package:prokat_app/features/auth/state/auth_notifier.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});

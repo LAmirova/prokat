@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'package:prokat_app/app/providers.dart'; // authRepoProvider
 import 'package:prokat_app/core/l10n/l10n.dart';

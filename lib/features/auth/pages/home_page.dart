@@ -2,33 +2,33 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:prokat_app/features/auth/state/auth_notifier.dart';
 
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
 
-  Future<void> _logout(BuildContext context, WidgetRef ref) async {
-    await ref
-        .read(authNotifierProvider.notifier)
-        .logout(); // удалит токен + обновит state
-    if (context.mounted) context.go('/login'); // мгновенно уводим на логин
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            tooltip: 'Выйти',
-            onPressed: () => _logout(context, ref),
-          ),
-        ],
-      ),
-      body: const Center(
-        child: Text('Добро пожаловать!'),
+      appBar: AppBar(title: const Text('Главная')),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text('Добро пожаловать!!'),
+            const SizedBox(height: 24),
+            ElevatedButton.icon(
+              onPressed: () => context.push('/listings'),
+              icon: const Icon(Icons.inventory_2_outlined),
+              label: const Text('Перейти в каталог'),
+            ),
+            const SizedBox(height: 12),
+            OutlinedButton.icon(
+              onPressed: () => context.push('/listings/create'),
+              icon: const Icon(Icons.add),
+              label: const Text('Создать объявление'),
+            ),
+          ],
+        ),
       ),
     );
   }
