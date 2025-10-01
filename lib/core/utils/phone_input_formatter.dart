@@ -29,9 +29,9 @@ class PhoneInputFormatter extends TextInputFormatter {
     // Если пользователь всё стер — оставляем базовый префикс "+7 "
     if (digits.isEmpty) {
       const base = '+7 ';
-      return TextEditingValue(
+      return const TextEditingValue(
         text: base,
-        selection: const TextSelection.collapsed(offset: base.length),
+        selection: TextSelection.collapsed(offset: base.length),
       );
     }
 

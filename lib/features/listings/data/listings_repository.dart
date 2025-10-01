@@ -1,5 +1,7 @@
+// lib/features/listings/data/listings_repository.dart
 import 'package:prokat_app/features/listings/data/listings_api.dart';
 import 'package:prokat_app/features/listings/domain/listing.dart';
+import 'package:prokat_app/features/listings/domain/taxonomy.dart';
 
 class ListingsRepository {
   final ListingsApi api;
@@ -31,8 +33,10 @@ class ListingsRepository {
     );
   }
 
-  Future<List<Listing>> getItems({String? search, int skip = 0, int limit = 20}) async {
-    final raw = await api.fetchItems(searchQuery: search, skip: skip, limit: limit);
+  Future<List<Listing>> getItems(
+      {String? search, int skip = 0, int limit = 20}) async {
+    final raw =
+        await api.fetchItems(searchQuery: search, skip: skip, limit: limit);
     return raw.map(_fromMap).toList();
   }
 
@@ -46,20 +50,40 @@ class ListingsRepository {
     return _fromMap(m);
   }
 
+  // taxonomy
+  Future<List<Section>> getSections() async =>
+      (await api.fetchSections()).map((e) => Section.fromJson(e)).toList();
+
+  Future<List<Category>> getCategories({int? sectionId}) async =>
+      (await api.fetchCategories(sectionId: sectionId))
+          .map((e) => Category.fromJson(e))
+          .toList();
+
+  Future<List<Subcategory>> getSubcategories({int? categoryId}) async =>
+      (await api.fetchSubcategories(categoryId: categoryId))
+          .map((e) => Subcategory.fromJson(e))
+          .toList();
+
+  // create
   Future<int> create({
     required String title,
     required String address,
     required ItemCondition condition,
     required bool deposit,
     required List<String> mainPhotos,
+    String? description,
     double? priceHour,
     double? priceDay,
     double? priceMonth,
-    String? description,
-    List<String>? tags,
+    List<String>? tags, // в API уйдёт CSV
+    String? brand,
+    String? serialNumber,
+    List<String>? equipmentList, // в API уйдёт как строка через запятую
+    String? damageDescription,
     int? sectionId,
     int? categoryId,
     int? subcategoryId,
+    List<String>? detailedPhotos,
   }) async {
     final m = await api.createItem(
       title: title,
@@ -67,14 +91,20 @@ class ListingsRepository {
       condition: condition.toApi(),
       deposit: deposit,
       mainPhotoFilePaths: mainPhotos,
+      description: description,
       priceHour: priceHour,
       priceDay: priceDay,
       priceMonth: priceMonth,
-      description: description,
-      tagsCsv: (tags ?? []).join(','),
+      tagsCsv: (tags ?? []).where((e) => e.trim().isNotEmpty).join(','),
+      brand: brand,
+      serialNumber: serialNumber,
+      equipmentList:
+          (equipmentList ?? []).where((e) => e.trim().isNotEmpty).join(','),
+      damageDescription: damageDescription,
       sectionId: sectionId,
       categoryId: categoryId,
       subcategoryId: subcategoryId,
+      detailedPhotoFilePaths: detailedPhotos,
     );
     return (m['id'] as num).toInt();
   }

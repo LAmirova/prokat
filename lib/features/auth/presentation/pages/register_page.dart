@@ -27,7 +27,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   }
 
   String? _phoneValidator(String? v) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final cleaned = getCleanPhone(v ?? '');
     if (!RegExp(r'^\+7\d{10}$').hasMatch(cleaned)) return l10n.invalidPhone;
     return null;
@@ -47,7 +47,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
       context.push('/verify', extra: cleanedPhone);
     } catch (e) {
       if (!mounted) return;
-      final l10n = AppLocalizations.of(context)!;
+      final l10n = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.apiError(e.toString()))),
       );
@@ -58,7 +58,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.registerTitle), centerTitle: true),

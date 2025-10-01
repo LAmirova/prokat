@@ -30,7 +30,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   }
 
   String? _phoneValidator(String? v) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final cleaned = getCleanPhone(v ?? '');
     if (!RegExp(r'^\+7\d{10}$').hasMatch(cleaned)) {
       return l10n.invalidPhone;
@@ -42,13 +42,13 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     final form = _formKey.currentState;
     if (form == null || !form.validate()) return;
 
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final cleanedPhone = getCleanPhone(phoneController.text);
     final password = passwordController.text.trim();
 
     if (password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.enterPassword ?? 'Введите пароль')),
+        SnackBar(content: Text(l10n.enterPassword)),
       );
       return;
     }
@@ -75,7 +75,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       body: SafeArea(

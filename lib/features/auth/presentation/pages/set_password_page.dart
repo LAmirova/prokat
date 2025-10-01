@@ -44,7 +44,7 @@ class _SetPasswordPageState extends ConsumerState<SetPasswordPage> {
   }
 
   String? _passwordValidator(String? v) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final value = (v ?? '').trim();
     if (value.isEmpty) return l10n.enterPassword;
     if (!_isStrong(value)) return l10n.passwordWeak;
@@ -52,7 +52,7 @@ class _SetPasswordPageState extends ConsumerState<SetPasswordPage> {
   }
 
   String? _confirmValidator(String? v) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final value = (v ?? '').trim();
     if (value.isEmpty) return l10n.confirmPassword;
     if (value != _password.text.trim()) return l10n.passwordsDontMatch;
@@ -63,7 +63,7 @@ class _SetPasswordPageState extends ConsumerState<SetPasswordPage> {
     final form = _formKey.currentState;
     if (form == null) return;
 
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
 
     if ((_phone ?? '').isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -91,7 +91,7 @@ class _SetPasswordPageState extends ConsumerState<SetPasswordPage> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.newPasswordTitle), centerTitle: true),

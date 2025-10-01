@@ -1,108 +1,58 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:prokat_app/core/network/dio_client.dart';
-import 'package:prokat_app/core/network/api_exception.dart';
 
+/// Низкоуровневый слой авторизации.
+/// ВАЖНО: /login — form-urlencoded с grant_type=password.
+/// Остальные эндпоинты подстрой под свои (я оставил очевидные пути).
 class AuthApi {
-  /// Отправка номера телефона
+  final Dio _dio = dio;
+
+  /// 📲 Отправка номера (если используется пошаговая регистрация)
   Future<void> sendPhone(String phone) async {
-    debugPrint('➡️ Отправляем номер: $phone');
-    try {
-      final res = await dio.post(
-        '/register',
-        data: {'phone': phone},
-        options: Options(
-          contentType: Headers.jsonContentType,
-          headers: {'Accept': 'application/json'},
-        ),
-      );
-      debugPrint('✅ Код отправлен: ${res.data}');
-    } on DioException catch (e) {
-      final msg = _extractErrorMessage(e) ?? 'Ошибка отправки номера';
-      throw ApiException(msg, statusCode: e.response?.statusCode);
-    }
+    // TODO: замени путь при необходимости
+    await _dio.post('/auth/send-phone', data: {'phone': phone});
   }
 
-  /// Подтверждение кода
+  /// ✅ Проверка кода из СМС/телеграма
   Future<void> verifyCode(String phone, String code) async {
-    debugPrint('➡️ Верифицируем: $phone, code=$code');
-    try {
-      final res = await dio.post(
-        '/verify',
-        data: {'phone': phone, 'code': code},
-        options: Options(
-          contentType: Headers.jsonContentType,
-          headers: {'Accept': 'application/json'},
-        ),
-      );
-      debugPrint('✅ Код подтверждён: ${res.data}');
-    } on DioException catch (e) {
-      final msg = _extractErrorMessage(e) ?? 'Ошибка подтверждения кода';
-      throw ApiException(msg, statusCode: e.response?.statusCode);
-    }
+    // TODO: замени путь при необходимости
+    await _dio.post('/auth/verify', data: {'phone': phone, 'code': code});
   }
 
-  /// Установка нового пароля
+  /// 🔐 Установка/сброс пароля для номера
   Future<void> setPassword(String phone, String password) async {
-    debugPrint('➡️ Устанавливаем пароль для $phone');
-    try {
-      final res = await dio.post(
-        '/set-password',
-        data: {'phone': phone, 'password': password},
-        options: Options(
-          contentType: Headers.jsonContentType,
-          headers: {'Accept': 'application/json'},
-        ),
-      );
-      debugPrint('🔒 Пароль установлен: ${res.data}');
-    } on DioException catch (e) {
-      final msg = _extractErrorMessage(e) ?? 'Ошибка установки пароля';
-      throw ApiException(msg, statusCode: e.response?.statusCode);
-    }
+    // TODO: замени путь при необходимости
+    await _dio.post('/auth/set-password', data: {
+      'phone': phone,
+      'password': password,
+    });
   }
 
-  /// Вход (password grant)
-  Future<String> login(String phone, String password) async {
-    debugPrint('➡️ Логинимся: $phone');
-    try {
-      final res = await dio.post(
-        '/login',
-        data: {
-          'grant_type': 'password',
-          'username': phone,
-          'password': password,
-        },
-        options: Options(
-          contentType: Headers.formUrlEncodedContentType,
-          headers: {'Accept': 'application/json'},
-        ),
-      );
-      final token = res.data['access_token']?.toString();
-      if (token == null || token.isEmpty) {
-        throw ApiException('Пустой токен');
-      }
-      // Не логируем токен!
-      return token;
-    } on DioException catch (e) {
-      final msg = _extractErrorMessage(e) ?? 'Ошибка входа';
-      throw ApiException(msg, statusCode: e.response?.statusCode);
-    }
-  }
+  /// 🔓 Логин по паролю (OAuth2 Password Grant).
+  /// Возвращает строку заголовка `Authorization`, например: "Bearer eyJ...".
+  Future<String> login(String username, String password) async {
+    final res = await _dio.post(
+      '/login',
+      data: {
+        'grant_type': 'password',
+        'username': username,
+        'password': password,
+        'scope': '',
+        'client_id': '',
+        'client_secret': '',
+      },
+      options: Options(contentType: Headers.formUrlEncodedContentType),
+    );
 
-  String? _extractErrorMessage(DioException e) {
-    final data = e.response?.data;
-    if (data == null) return null;
+    final data = res.data as Map<String, dynamic>;
+    final token = data['access_token']?.toString();
+    var type = (data['token_type']?.toString() ?? 'Bearer');
+    // нормализуем тип, если сервер прислал "bearer"
+    if (type.toLowerCase() == 'bearer') type = 'Bearer';
 
-    if (data is Map && data['detail'] != null) {
-      final detail = data['detail'];
-      if (detail is String) return detail;
-      if (detail is List && detail.isNotEmpty && detail.first is Map) {
-        return detail.first['msg']?.toString();
-      }
+    if (token == null || token.isEmpty) {
+      throw Exception('Не удалось получить access_token');
     }
-    if (data is Map && data['message'] != null) {
-      return data['message'].toString();
-    }
-    return data.toString();
+    return '$type $token';
   }
 }

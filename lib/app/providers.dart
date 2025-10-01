@@ -9,23 +9,30 @@ import 'package:prokat_app/features/listings/data/listings_api.dart';
 import 'package:prokat_app/features/listings/data/listings_repository.dart';
 import 'package:prokat_app/features/listings/state/listings_notifier.dart';
 
-/// Репозиторий авторизации (твой класс на FlutterSecureStorage + AuthApi)
-final authRepoProvider = Provider<AuthRepository>((ref) {
-  return AuthRepository();
-});
+// ACCOUNT
+import 'package:prokat_app/features/account/data/account_api.dart';
+import 'package:prokat_app/features/account/data/account_repository.dart';
+import 'package:prokat_app/features/account/state/account_notifier.dart';
 
-/// API-слой объявлений (работает через общий dio из core/network/dio_client.dart)
-final listingsApiProvider = Provider<ListingsApi>((ref) {
-  return ListingsApi();
-});
+// --- AUTH
+final authRepoProvider = Provider<AuthRepository>((ref) => AuthRepository());
 
-/// Репозиторий объявлений
-final listingsRepositoryProvider = Provider<ListingsRepository>((ref) {
-  return ListingsRepository(ref.watch(listingsApiProvider));
-});
-
-/// Состояние каталога (список/поиск/мои)
+// --- LISTINGS
+final listingsApiProvider = Provider<ListingsApi>((ref) => ListingsApi());
+final listingsRepositoryProvider = Provider<ListingsRepository>(
+  (ref) => ListingsRepository(ref.watch(listingsApiProvider)),
+);
 final listingsStateProvider =
-    StateNotifierProvider<ListingsNotifier, ListingsState>((ref) {
-  return ListingsNotifier(ref.watch(listingsRepositoryProvider));
-});
+    StateNotifierProvider<ListingsNotifier, ListingsState>(
+  (ref) => ListingsNotifier(ref.watch(listingsRepositoryProvider)),
+);
+
+// --- ACCOUNT
+final accountApiProvider = Provider<AccountApi>((ref) => AccountApi());
+final accountRepositoryProvider = Provider<AccountRepository>(
+  (ref) => AccountRepository(ref.watch(accountApiProvider)),
+);
+final accountNotifierProvider =
+    StateNotifierProvider<AccountNotifier, AccountState>(
+  (ref) => AccountNotifier(ref.watch(accountRepositoryProvider)),
+);

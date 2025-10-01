@@ -27,7 +27,7 @@ class _VerifyPageState extends ConsumerState<VerifyPage> {
   }
 
   Future<void> _verify() async {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
 
     if ((_phone ?? '').isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -58,7 +58,7 @@ class _VerifyPageState extends ConsumerState<VerifyPage> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final phoneShown = _phone ?? '—';
 
     return Scaffold(

@@ -47,7 +47,7 @@ class MyApp extends ConsumerWidget {
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(14),
-            borderSide: BorderSide(color: Color(0xFFE5E7EB), width: 1.5),
+            borderSide: const BorderSide(color: Color(0xFFE5E7EB), width: 1.5),
           ),
         ),
         appBarTheme: const AppBarTheme(

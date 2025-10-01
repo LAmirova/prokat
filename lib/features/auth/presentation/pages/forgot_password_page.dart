@@ -27,7 +27,7 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
   }
 
   String? _phoneValidator(String? v) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final cleaned = getCleanPhone(v ?? '');
     if (!RegExp(r'^\+7\d{10}$').hasMatch(cleaned)) return l10n.invalidPhone;
     return null;
@@ -37,7 +37,7 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
     final form = _formKey.currentState;
     if (form == null || !form.validate()) return;
 
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final phone = getCleanPhone(_phoneController.text);
 
     setState(() => _loading = true);
@@ -61,7 +61,7 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       appBar: AppBar(
